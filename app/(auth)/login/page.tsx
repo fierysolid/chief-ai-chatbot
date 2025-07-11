@@ -1,76 +1,102 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { useActionState, useEffect, useState } from 'react';
-import { toast } from '@/components/toast';
-
-import { AuthForm } from '@/components/auth-form';
-import { SubmitButton } from '@/components/submit-button';
-
-import { login, type LoginActionState } from '../actions';
-import { useSession } from 'next-auth/react';
+import { useState } from "react";
+import { signIn } from "next-auth/react";
+import { LogoGoogle } from "@/components/icons";
+import Image from "next/image";
+import Logo from "./assets/logo.png";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import Link from "next/link";
 
 export default function Page() {
-  const router = useRouter();
+  const [loading, setLoading] = useState(false);
 
-  const [email, setEmail] = useState('');
-  const [isSuccessful, setIsSuccessful] = useState(false);
-
-  const [state, formAction] = useActionState<LoginActionState, FormData>(
-    login,
-    {
-      status: 'idle',
-    },
-  );
-
-  const { update: updateSession } = useSession();
-
-  useEffect(() => {
-    if (state.status === 'failed') {
-      toast({
-        type: 'error',
-        description: 'Invalid credentials!',
-      });
-    } else if (state.status === 'invalid_data') {
-      toast({
-        type: 'error',
-        description: 'Failed validating your submission!',
-      });
-    } else if (state.status === 'success') {
-      setIsSuccessful(true);
-      updateSession();
-      router.refresh();
+  const onClick = async () => {
+    setLoading(true);
+    try {
+      await signIn("google");
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
     }
-  }, [state.status]);
-
-  const handleSubmit = (formData: FormData) => {
-    setEmail(formData.get('email') as string);
-    formAction(formData);
   };
 
   return (
-    <div className="flex h-dvh w-screen items-start pt-12 md:pt-0 md:items-center justify-center bg-background">
-      <div className="w-full max-w-md overflow-hidden rounded-2xl flex flex-col gap-12">
-        <div className="flex flex-col items-center justify-center gap-2 px-4 text-center sm:px-16">
-          <h3 className="text-xl font-semibold dark:text-zinc-50">Sign In</h3>
-          <p className="text-sm text-gray-500 dark:text-zinc-400">
-            Use your email and password to sign in
+    <div className="min-h-screen bg-black flex items-center justify-center p-4">
+      <div className="w-full max-w-md">
+        <Card className="border-0 shadow-2xl bg-white/95 backdrop-blur-sm">
+          <CardContent className="p-8">
+            <div className="text-center space-y-6">
+              {/* Logo Section */}
+              <div className="flex justify-center">
+                <div className="size-20 bg-black rounded-full flex items-center justify-center shadow-lg">
+                  <Image
+                    src={Logo}
+                    width={200}
+                    height={200}
+                    alt="logo"
+                    className="rounded-full"
+                  />
+                </div>
+              </div>
+
+              {/* Heading */}
+              <div className="space-y-2">
+                <h1 className="text-2xl font-bold text-slate-900">
+                  Welcome to Sched.Tech
+                </h1>
+                <p className="text-slate-600 text-sm">
+                  Sign in to access your scheduling dashboard
+                </p>
+              </div>
+
+              {/* Google Sign In Button */}
+              <div className="pt-4">
+                <Button
+                  onClick={onClick}
+                  variant="outline"
+                  size="lg"
+                  className="w-full h-12"
+                >
+                  <LogoGoogle />
+                  Continue with Google
+                </Button>
+              </div>
+
+              {/* Footer Text */}
+              <div className="pt-6 border-t border-slate-200">
+                <p className="text-xs text-slate-500">
+                  By signing in, you agree to our{" "}
+                  <Link href="#" className="text-slate-700 hover:underline">
+                    Terms of Service
+                  </Link>{" "}
+                  and{" "}
+                  <Link
+                    href="/privacy"
+                    className="text-slate-700 hover:underline"
+                  >
+                    Privacy Policy
+                  </Link>
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Additional Info */}
+        <div className="text-center mt-6">
+          <p className="text-slate-400 text-sm">
+            Need help?{" "}
+            <a
+              href="#"
+              className="text-slate-300 hover:text-white transition-colors"
+            >
+              Contact Support
+            </a>
           </p>
         </div>
-        <AuthForm action={handleSubmit} defaultEmail={email}>
-          <SubmitButton isSuccessful={isSuccessful}>Sign in</SubmitButton>
-          <p className="text-center text-sm text-gray-600 mt-4 dark:text-zinc-400">
-            {"Don't have an account? "}
-            <Link
-              href="/register"
-              className="font-semibold text-gray-800 hover:underline dark:text-zinc-200"
-            >
-              Sign up
-            </Link>
-            {' for free.'}
-          </p>
-        </AuthForm>
       </div>
     </div>
   );

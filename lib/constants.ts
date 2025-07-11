@@ -7,7 +7,3 @@ export const isTestEnvironment = Boolean(
     process.env.PLAYWRIGHT ||
     process.env.CI_PLAYWRIGHT,
 );
-
-export const guestRegex = /^guest-\d+$/;
-
-export const DUMMY_PASSWORD = generateDummyPassword();
