@@ -53,6 +53,8 @@ export const account = pgTable(
   }),
 );
 
+export type Account = InferSelectModel<typeof account>;
+
 export const session = pgTable('session', {
   sessionToken: text('sessionToken').primaryKey(),
   userId: uuid('userId')
@@ -60,6 +62,8 @@ export const session = pgTable('session', {
     .references(() => user.id, { onDelete: 'cascade' }),
   expires: timestamp('expires', { mode: 'date' }).notNull(),
 });
+
+export type Session = InferSelectModel<typeof session>;
 
 export const verificationToken = pgTable(
   'verificationToken',
@@ -74,6 +78,8 @@ export const verificationToken = pgTable(
     }),
   }),
 );
+
+export type VerificationToken = InferSelectModel<typeof verificationToken>;
 
 export const authenticator = pgTable(
   'authenticator',
@@ -95,6 +101,8 @@ export const authenticator = pgTable(
     }),
   }),
 );
+
+export type Authenticator = InferSelectModel<typeof authenticator>;
 
 export const chat = pgTable('Chat', {
   id: uuid('id').primaryKey().notNull().defaultRandom(),
@@ -186,7 +194,7 @@ export const document = pgTable(
     createdAt: timestamp('createdAt').notNull(),
     title: text('title').notNull(),
     content: text('content'),
-    kind: varchar('text', { enum: ['text', 'code', 'image', 'sheet'] })
+    kind: varchar('text', { enum: ['text', 'code', 'image', 'sheet', 'brief'] })
       .notNull()
       .default('text'),
     userId: uuid('userId')

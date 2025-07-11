@@ -5,6 +5,7 @@ import { Editor } from "@/components/text-editor";
 import {
   ClockRewind,
   CopyIcon,
+  DownloadIcon,
   MessageIcon,
   PenIcon,
   RedoIcon,
@@ -13,14 +14,15 @@ import {
 import type { Suggestion } from "@/lib/db/schema";
 import { toast } from "sonner";
 import { getSuggestions } from "../actions";
+import { format } from "date-fns";
 
-interface TextArtifactMetadata {
+interface BriefArtifactMetadata {
   suggestions: Array<Suggestion>;
 }
 
-export const textArtifact = new Artifact<"text", TextArtifactMetadata>({
-  kind: "text",
-  description: "Useful for text content, like drafting essays and emails.",
+export const briefArtifact = new Artifact<"brief", BriefArtifactMetadata>({
+  kind: "brief",
+  description: "Useful for working with brief books",
   initialize: async ({ documentId, setMetadata }) => {
     const suggestions = await getSuggestions({ documentId });
 
@@ -143,6 +145,25 @@ export const textArtifact = new Artifact<"text", TextArtifactMetadata>({
       onClick: ({ content }) => {
         navigator.clipboard.writeText(content);
         toast.success("Copied to clipboard!");
+      },
+    },
+    {
+      icon: <DownloadIcon size={18} />,
+      description: "Download",
+      onClick: async ({ content }) => {
+        const blob = new Blob([content]);
+        const href = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = href;
+        link.setAttribute(
+          "download",
+          `Daily-Brief-${format(new Date(), "PPpp")}.md`
+        );
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(href);
+        toast.success("File downloaded!");
       },
     },
   ],
