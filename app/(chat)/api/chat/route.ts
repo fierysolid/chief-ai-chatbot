@@ -36,6 +36,7 @@ import { ChatSDKError } from '@/lib/errors';
 import type { ChatMessage } from '@/lib/types';
 import type { ChatModel } from '@/lib/ai/models';
 import type { VisibilityType } from '@/components/visibility-selector';
+import { google } from '@ai-sdk/google';
 
 export const maxDuration = 60;
 
@@ -171,11 +172,23 @@ export async function POST(request: Request) {
               session,
               dataStream,
             }),
+            google_search: google.tools.googleSearch({}),
           },
           experimental_telemetry: {
             isEnabled: isProductionEnvironment,
             functionId: 'stream-text',
           },
+          providerOptions:
+            selectedChatModel === 'chat-model-reasoning'
+              ? {
+                  google: {
+                    thinkingConfig: {
+                      thinkingBudget: 8192,
+                      includeThoughts: true,
+                    },
+                  },
+                }
+              : {},
         });
 
         result.consumeStream();

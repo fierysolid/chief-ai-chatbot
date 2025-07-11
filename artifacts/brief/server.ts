@@ -5,12 +5,17 @@ import { updateDocumentPrompt } from '@/lib/ai/prompts';
 import { type calendar_v3, google } from 'googleapis';
 import { db, account, type Account } from '@/lib/db/schema';
 import { and, eq } from 'drizzle-orm';
-import { endOfToday, startOfToday } from 'date-fns';
 import { BASE_URL } from '@/lib/constants';
 
 export const briefDocumentHandler = createDocumentHandler<'brief'>({
   kind: 'brief',
-  onCreateDocument: async ({ title, dataStream, session }) => {
+  onCreateDocument: async ({
+    title,
+    dataStream,
+    session,
+    timeMin,
+    timeMax,
+  }) => {
     let credentials: Account | null = null;
     try {
       const accounts = await db
@@ -54,8 +59,6 @@ export const briefDocumentHandler = createDocumentHandler<'brief'>({
         const calendarList = await calendar.calendarList.list();
         const calendars = calendarList.data.items || [];
         // Get today in UTC
-        const startOfDay = startOfToday().toISOString();
-        const endOfDay = endOfToday().toISOString();
         const allEvents: {
           calendar?: string | null;
           events: calendar_v3.Schema$Event[];
@@ -64,8 +67,8 @@ export const briefDocumentHandler = createDocumentHandler<'brief'>({
           if (!cal.id) continue;
           const events = await calendar.events.list({
             calendarId: cal.id,
-            timeMin: startOfDay,
-            timeMax: endOfDay,
+            timeMin,
+            timeMax,
             singleEvents: true,
             orderBy: 'startTime',
           });
@@ -87,7 +90,7 @@ export const briefDocumentHandler = createDocumentHandler<'brief'>({
 
           const { fullStream } = streamText({
             model: myProvider.languageModel('artifact-model'),
-            system: `Using Markdown, generate a brief book for today using these following calendar events: ${allEvents.flatMap((cal) => `\n### ${cal.calendar}\n${cal.events.map((e) => `- ${e.summary || '(No title)'} (${e.start?.dateTime || e.start?.date || ''})`).join('\n')}`)}`,
+            system: `Using Markdown, generate a detailed brief book for the upcoming calendar events so I'm properly briefed on all events: ${allEvents.flatMap((cal) => `\n### ${cal.calendar}\n${cal.events.map((e) => `- ${e.summary || '(No title)'} (${e.start?.dateTime || e.start?.date || ''})`).join('\n')}`)}`,
             // 'Write about the given topic. Markdown is supported. Use headings wherever appropriate.',
             experimental_transform: smoothStream({ chunking: 'word' }),
             prompt: title,

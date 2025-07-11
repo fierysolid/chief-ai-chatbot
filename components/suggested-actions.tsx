@@ -6,6 +6,7 @@ import { memo } from "react";
 import type { UseChatHelpers } from "@ai-sdk/react";
 import type { VisibilityType } from "./visibility-selector";
 import type { ChatMessage } from "@/lib/types";
+import { endOfDay, nextFriday, nextMonday, startOfDay } from "date-fns";
 
 interface SuggestedActionsProps {
   chatId: string;
@@ -23,6 +24,15 @@ function PureSuggestedActions({
       title: "Write a brief book",
       label: "for today",
       action: "Write a brief book for today",
+    },
+    {
+      title: "Write a brief book",
+      label: "for next week",
+      action: `Write a brief book for ${startOfDay(
+        nextMonday(new Date())
+      ).toLocaleString()} to ${endOfDay(
+        nextFriday(new Date())
+      ).toLocaleString()}`,
     },
     // {
     //   title: 'What are the advantages',

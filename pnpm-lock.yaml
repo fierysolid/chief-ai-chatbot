@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@ai-sdk/google':
+        specifier: 2.0.0-beta.8
+        version: 2.0.0-beta.8(zod@3.25.68)
       '@ai-sdk/provider':
         specifier: 2.0.0-beta.1
         version: 2.0.0-beta.1
@@ -287,6 +290,12 @@ packages:
 
   '@ai-sdk/gateway@1.0.0-beta.3':
     resolution: {integrity: sha512-g49gMSkXy94lYvl5LRh438OR/0JCG6ol0jV+iLot7cy5HLltZlGocEuauETBu4b10mDXOd7XIjTEZoQpYFMYLQ==}
+    engines: {node: '>=18'}
+    peerDependencies:
+      zod: ^3.25.49
+
+  '@ai-sdk/google@2.0.0-beta.8':
+    resolution: {integrity: sha512-LGqnVfK90mEpbBA0YpKrtNic+/g18zUpmAljhDl5ifLcHvOoD5O+82RGk4Ew9IrEhqWQi0cJu0VcyRs9iVLzgw==}
     engines: {node: '>=18'}
     peerDependencies:
       zod: ^3.25.49
@@ -4049,6 +4058,12 @@ packages:
 snapshots:
 
   '@ai-sdk/gateway@1.0.0-beta.3(zod@3.25.68)':
+    dependencies:
+      '@ai-sdk/provider': 2.0.0-beta.1
+      '@ai-sdk/provider-utils': 3.0.0-beta.2(zod@3.25.68)
+      zod: 3.25.68
+
+  '@ai-sdk/google@2.0.0-beta.8(zod@3.25.68)':
     dependencies:
       '@ai-sdk/provider': 2.0.0-beta.1
       '@ai-sdk/provider-utils': 3.0.0-beta.2(zod@3.25.68)

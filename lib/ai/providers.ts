@@ -4,6 +4,7 @@ import {
   wrapLanguageModel,
 } from 'ai';
 import { xai } from '@ai-sdk/xai';
+import { google } from '@ai-sdk/google';
 import {
   artifactModel,
   chatModel,
@@ -23,13 +24,13 @@ export const myProvider = isTestEnvironment
     })
   : customProvider({
       languageModels: {
-        'chat-model': xai('grok-2-vision-latest'),
+        'chat-model': google('gemini-2.5-flash'),
         'chat-model-reasoning': wrapLanguageModel({
-          model: xai('grok-4'),
+          model: google('gemini-2.5-pro'),
           middleware: extractReasoningMiddleware({ tagName: 'think' }),
         }),
-        'title-model': xai('grok-2-vision-latest'),
-        'artifact-model': xai('grok-2-vision-latest'),
+        'title-model': google('gemini-2.5-flash'),
+        'artifact-model': google('gemini-2.5-flash'),
       },
       imageModels: {
         'small-model': xai.imageModel('grok-2-image'),

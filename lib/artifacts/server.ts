@@ -23,6 +23,8 @@ export interface CreateDocumentCallbackProps {
   title: string;
   dataStream: UIMessageStreamWriter<ChatMessage>;
   session: Session;
+  timeMin?: string;
+  timeMax?: string;
 }
 
 export interface UpdateDocumentCallbackProps {
