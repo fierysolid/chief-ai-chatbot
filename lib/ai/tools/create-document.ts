@@ -32,8 +32,6 @@ export const createDocument = ({ session, dataStream }: CreateDocumentProps) =>
         ),
     }),
     execute: async ({ title, kind, timeMin, timeMax }) => {
-      console.log('timeMin', timeMin);
-      console.log('timeMin', timeMax);
       const id = generateUUID();
 
       dataStream.write({
